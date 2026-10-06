@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del gasto</title>
+</head>
+
+
+<body>
+
+
+<h1>
+    Detalle del gasto
+</h1>
+
+
+<p>
+    <strong>Vehículo:</strong>
+    {{ expense.vehicle }}
+</p>
+
+
+<p>
+    <strong>Viaje:</strong>
+
+    {% if expense.trip %}
+
+    {{ expense.trip }}
+
+    {% else %}
+
+    Sin viaje
+
+    {% endif %}
+
+</p>
+
+
+<p>
+    <strong>Tipo:</strong>
+    {{ expense.get_expense_type_display }}
+</p>
+
+
+<p>
+    <strong>Fecha:</strong>
+    {{ expense.date }}
+</p>
+
+
+<p>
+    <strong>Monto:</strong>
+    ${{ expense.amount }}
+</p>
+
+
+<p>
+    <strong>Descripción:</strong>
+    {{ expense.description }}
+</p>
+
+
+<p>
+    <strong>Observaciones:</strong>
+    {{ expense.observations }}
+</p>
+
+
+<br>
+
+{% load permission_tags %}
+
+
+{% user_has_permission request.user 'expenses' 2 as can_edit_expense %}
+
+
+{% if can_edit_expense %}
+
+<a href="{% url 'expense_edit' expense.id %}">
+    Editar gasto
+</a>
+
+{% endif %}
+
+<a href="{% url 'expense_list' %}">
+    Volver a gastos
+</a>
+
+
+</body>
+
+</html>

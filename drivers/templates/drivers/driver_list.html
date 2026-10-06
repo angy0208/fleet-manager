@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% load permission_tags %}
+
+{% block title %}
+Conductores | Fleet Management
+{% endblock %}
+
+
+{% block content %}
+
+{% user_has_permission request.user 'drivers' 2 as can_create_driver %}
+
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Conductores
+        </h1>
+
+        <p>
+            Gestiona y consulta la información de los conductores registrados.
+        </p>
+
+    </div>
+
+
+    {% if can_create_driver %}
+
+        <a
+            href="{% url 'driver_create' %}"
+            class="btn btn-primary"
+        >
+            + Registrar conductor
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Conductores registrados
+            </h2>
+
+            <p>
+                Selecciona un conductor para consultar su información.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if drivers %}
+
+        <div class="table-container">
+
+            <table class="dashboard-table driver-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Conductor
+                        </th>
+
+                        <th>
+                            Identificación
+                        </th>
+
+                        <th>
+                            Licencia
+                        </th>
+
+                        <th>
+                            Vencimiento
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for driver in drivers %}
+
+                        <tr>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'driver_detail' driver.id %}"
+                                    class="driver-name"
+                                >
+
+                                    <strong>
+                                        {{ driver.first_name }}
+                                        {{ driver.last_name }}
+                                    </strong>
+
+                                    <span>
+                                        Conductor
+                                    </span>
+
+                                </a>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="identification-badge">
+                                    {{ driver.identification }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+                                {{ driver.license_number }}
+                            </td>
+
+
+                            <td>
+                                {{ driver.license_expiry|date:"d/m/Y" }}
+                            </td>
+
+
+                            <td>
+
+                                {% if driver.status == 'active' %}
+
+                                    <span class="status-badge status-active">
+                                        Activo
+                                    </span>
+
+                                {% elif driver.status == 'inactive' %}
+
+                                    <span class="status-badge status-maintenance">
+                                        Inactivo
+                                    </span>
+
+                                {% elif driver.status == 'suspended' %}
+
+                                    <span class="status-badge status-out">
+                                        Suspendido
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <a
+                                    href="{% url 'driver_detail' driver.id %}"
+                                    class="table-action"
+                                >
+                                    Ver detalle →
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h3>
+                No hay conductores registrados
+            </h3>
+
+            <p>
+                Todavía no se han registrado conductores en el sistema.
+            </p>
+
+
+            {% if can_create_driver %}
+
+                <a
+                    href="{% url 'driver_create' %}"
+                    class="btn btn-primary"
+                >
+                    Registrar primer conductor
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

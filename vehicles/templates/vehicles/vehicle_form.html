@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if vehicle %}
+    Editar vehículo | Fleet Management
+{% else %}
+    Registrar vehículo | Fleet Management
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <a
+            href="{% url 'vehicle_list' %}"
+            class="back-link"
+        >
+            ← Volver a vehículos
+        </a>
+
+        <h1>
+            {% if vehicle %}
+                Editar vehículo
+            {% else %}
+                Registrar vehículo
+            {% endif %}
+        </h1>
+
+        <p>
+            {% if vehicle %}
+                Actualiza la información del vehículo seleccionado.
+            {% else %}
+                Registra una nueva unidad en la flota.
+            {% endif %}
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="form-container">
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Información del vehículo
+                </h2>
+
+                <p>
+                    Completa los datos generales de la unidad.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form method="POST" class="vehicle-form">
+
+            {% csrf_token %}
+
+
+            {% if form.non_field_errors %}
+
+                <div class="form-errors">
+
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="{{ form.plate.id_for_label }}">
+                        Placa
+                    </label>
+
+                    {{ form.plate }}
+
+                    {% if form.plate.errors %}
+                        <div class="field-error">
+                            {{ form.plate.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.internal_number.id_for_label }}">
+                        Número interno
+                    </label>
+
+                    {{ form.internal_number }}
+
+                    {% if form.internal_number.errors %}
+                        <div class="field-error">
+                            {{ form.internal_number.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                    <small>
+                        Opcional. Identificador interno de la empresa.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.brand.id_for_label }}">
+                        Marca
+                    </label>
+
+                    {{ form.brand }}
+
+                    {% if form.brand.errors %}
+                        <div class="field-error">
+                            {{ form.brand.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.model.id_for_label }}">
+                        Modelo
+                    </label>
+
+                    {{ form.model }}
+
+                    {% if form.model.errors %}
+                        <div class="field-error">
+                            {{ form.model.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.year.id_for_label }}">
+                        Año
+                    </label>
+
+                    {{ form.year }}
+
+                    {% if form.year.errors %}
+                        <div class="field-error">
+                            {{ form.year.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.vehicle_type.id_for_label }}">
+                        Tipo de vehículo
+                    </label>
+
+                    {{ form.vehicle_type }}
+
+                    {% if form.vehicle_type.errors %}
+                        <div class="field-error">
+                            {{ form.vehicle_type.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.status.id_for_label }}">
+                        Estado
+                    </label>
+
+                    {{ form.status }}
+
+                    {% if form.status.errors %}
+                        <div class="field-error">
+                            {{ form.status.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.current_mileage.id_for_label }}">
+                        Kilometraje actual
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        {{ form.current_mileage }}
+
+                        <span>
+                            km
+                        </span>
+
+                    </div>
+
+                    {% if form.current_mileage.errors %}
+                        <div class="field-error">
+                            {{ form.current_mileage.errors.0 }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a
+                    href="{% url 'vehicle_list' %}"
+                    class="btn btn-secondary"
+                >
+                    Cancelar
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+
+                    {% if vehicle %}
+                        Actualizar vehículo
+                    {% else %}
+                        Guardar vehículo
+                    {% endif %}
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

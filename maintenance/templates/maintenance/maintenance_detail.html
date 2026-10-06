@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Detalle de mantenimiento</title>
+</head>
+
+<body>
+
+<h1>Detalle del mantenimiento</h1>
+
+<hr>
+
+<p>
+<strong>Vehículo:</strong>
+{{ maintenance.vehicle }}
+</p>
+
+
+<p>
+<strong>Tipo:</strong>
+{{ maintenance.get_maintenance_type_display }}
+</p>
+
+
+<p>
+<strong>Categoría:</strong>
+{{ maintenance.get_category_display }}
+</p>
+
+
+<p>
+<strong>Fecha:</strong>
+{{ maintenance.date }}
+</p>
+
+
+<p>
+<strong>Kilometraje:</strong>
+{{ maintenance.mileage }} km
+</p>
+
+
+<p>
+<strong>Costo:</strong>
+${{ maintenance.cost }}
+</p>
+
+
+<p>
+<strong>Estado:</strong>
+{{ maintenance.get_status_display }}
+</p>
+
+
+<p>
+<strong>Descripción:</strong>
+{{ maintenance.description }}
+</p>
+
+
+<p>
+<strong>Observaciones:</strong>
+{{ maintenance.observations }}
+</p>
+
+
+<hr>
+
+
+<a href="{% url 'maintenance_list' %}">
+    Volver
+</a>
+
+
+<a href="{% url 'maintenance_update' maintenance.id %}">
+    Editar
+</a>
+
+
+</body>
+
+</html>

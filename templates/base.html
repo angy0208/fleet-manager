@@ -1,0 +1,200 @@
+{% load static %}
+{% load permission_tags %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        Fleet Management
+        {% endblock %}
+    </title>
+
+    <link
+            rel="stylesheet"
+            href="{% static 'css/base.css' %}"
+    >
+
+</head>
+
+<body>
+
+<div class="app-layout">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-icon">
+                FM
+            </div>
+
+            <div>
+                <h1>
+                    Fleet
+                </h1>
+
+                <span>
+                        Management
+                    </span>
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <p class="nav-section">
+                PRINCIPAL
+            </p>
+
+            <a href="{% url 'reports_dashboard' %}">
+                Dashboard
+            </a>
+
+            <p class="nav-section">
+                OPERACIONES
+            </p>
+
+
+            {% user_has_permission request.user 'vehicles' 1 as can_vehicles %}
+
+            {% if can_vehicles %}
+
+            <a href="{% url 'vehicle_list' %}">
+                Vehículos
+            </a>
+
+            {% endif %}
+
+
+            {% user_has_permission request.user 'drivers' 1 as can_drivers %}
+
+            {% if can_drivers %}
+
+            <a href="{% url 'driver_list' %}">
+                Conductores
+            </a>
+
+            {% endif %}
+
+
+            {% user_has_permission request.user 'trips' 1 as can_trips %}
+
+            {% if can_trips %}
+
+            <a href="{% url 'trip_list' %}">
+                Viajes
+            </a>
+
+            {% endif %}
+
+
+            <p class="nav-section">
+                GESTIÓN
+            </p>
+
+
+            {% user_has_permission request.user 'maintenance' 1 as can_maintenance %}
+
+            {% if can_maintenance %}
+
+            <a href="{% url 'maintenance_list' %}">
+                Mantenimiento
+            </a>
+
+            {% endif %}
+
+
+            {% user_has_permission request.user 'expenses' 1 as can_expenses %}
+
+            {% if can_expenses %}
+
+            <a href="{% url 'expense_list' %}">
+                Gastos
+            </a>
+
+            {% endif %}
+
+        </nav>
+
+
+        <div class="sidebar-footer">
+
+            <a href="{% url 'dashboard' %}">
+                Volver al inicio
+            </a>
+
+            <a href="{% url 'logout' %}">
+                Cerrar sesión
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Main -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                    <span class="topbar-label">
+                        Sistema de gestión de flota
+                    </span>
+
+            </div>
+
+
+            <div class="user-info">
+
+                <div class="user-avatar">
+                    {{ request.user.username|first|upper }}
+                </div>
+
+                <div class="user-details">
+
+                    <strong>
+                        {{ request.user.username }}
+                    </strong>
+
+                    <span>
+            Usuario del sistema
+        </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="page-content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

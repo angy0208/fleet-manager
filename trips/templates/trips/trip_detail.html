@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% load permission_tags %}
+{% load report_filters %}
+
+{% block title %}
+{{ trip.origin }} → {{ trip.destination }} | Fleet Management
+{% endblock %}
+
+
+{% block content %}
+
+{% user_has_permission request.user 'trips' 2 as can_edit_trip %}
+
+
+<div class="page-header">
+
+    <div>
+
+        <a
+                href="{% url 'trip_list' %}"
+                class="back-link"
+        >
+            ← Volver a viajes
+        </a>
+
+        <h1 class="detail-title">
+            {{ trip.origin }} → {{ trip.destination }}
+        </h1>
+
+        <p>
+            Información y seguimiento del viaje.
+        </p>
+
+    </div>
+
+
+    {% if can_edit_trip %}
+
+    <a
+            href="{% url 'trip_edit' trip.id %}"
+            class="btn btn-primary"
+    >
+        Editar viaje
+    </a>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Resumen del viaje -->
+
+<div class="trip-summary-grid">
+
+
+    <div class="trip-summary-card">
+
+        <span>
+            Estado
+        </span>
+
+        {% if trip.status == 'scheduled' %}
+
+        <strong class="status-badge status-maintenance">
+            Programado
+        </strong>
+
+        {% elif trip.status == 'in_progress' %}
+
+        <strong class="status-badge status-maintenance">
+            En curso
+        </strong>
+
+        {% elif trip.status == 'completed' %}
+
+        <strong class="status-badge status-active">
+            Completado
+        </strong>
+
+        {% elif trip.status == 'cancelled' %}
+
+        <strong class="status-badge status-out">
+            Cancelado
+        </strong>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="trip-summary-card">
+
+        <span>
+            Vehículo
+        </span>
+
+        <strong>
+            {{ trip.vehicle.brand }}
+            {{ trip.vehicle.model }}
+        </strong>
+
+        <small>
+            {{ trip.vehicle.plate }}
+        </small>
+
+    </div>
+
+
+    <div class="trip-summary-card">
+
+        <span>
+            Conductor
+        </span>
+
+        <strong>
+            {{ trip.driver.first_name }}
+            {{ trip.driver.last_name }}
+        </strong>
+
+        <small>
+            {{ trip.driver.identification }}
+        </small>
+
+    </div>
+
+
+</div>
+
+
+<!-- Información de la ruta -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Información de la ruta
+            </h2>
+
+            <p>
+                Datos principales del recorrido.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="route-display">
+
+        <div class="route-point">
+
+            <span>
+                Origen
+            </span>
+
+            <strong>
+                {{ trip.origin }}
+            </strong>
+
+        </div>
+
+
+        <div class="route-arrow">
+            →
+        </div>
+
+
+        <div class="route-point">
+
+            <span>
+                Destino
+            </span>
+
+            <strong>
+                {{ trip.destination }}
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Fechas y kilometraje -->
+
+<div class="detail-grid">
+
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Fechas del viaje
+                </h2>
+
+                <p>
+                    Información temporal del recorrido.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="maintenance-detail">
+
+
+            <div class="detail-row">
+
+                <span>
+                    Salida
+                </span>
+
+                <strong>
+                    {{ trip.departure_date|date:"d/m/Y H:i" }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Llegada
+                </span>
+
+                <strong>
+
+                    {% if trip.arrival_date %}
+                    {{ trip.arrival_date|date:"d/m/Y H:i" }}
+                    {% else %}
+                    <span class="text-muted">
+                            No registrada
+                        </span>
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Kilometraje
+                </h2>
+
+                <p>
+                    Registro del recorrido del vehículo.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="maintenance-detail">
+
+            <div class="detail-row">
+
+        <span>
+            Kilometraje inicial
+        </span>
+
+                <strong>
+                    {{ trip.initial_mileage|spanish_number }} km
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+        <span>
+            Kilometraje final
+        </span>
+
+                <strong>
+
+                    {% if trip.final_mileage %}
+                    {{ trip.final_mileage|spanish_number }} km
+                    {% else %}
+                    <span class="text-muted">
+                    No registrado
+                </span>
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        {% if trip.final_mileage %}
+
+        <div class="detail-row">
+
+                    <span>
+                        Kilómetros recorridos
+                    </span>
+
+            <strong>
+                {{ trip.final_mileage|add:"-"|add:trip.initial_mileage }} km
+            </strong>
+
+        </div>
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- Observaciones -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Observaciones
+            </h2>
+
+            <p>
+                Información adicional registrada para el viaje.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="trip-observations">
+
+        {% if trip.observations %}
+
+        <p>
+            {{ trip.observations }}
+        </p>
+
+        {% else %}
+
+        <p class="text-muted">
+            Sin observaciones registradas.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+
+{% load permission_tags %}
+{% load report_filters %}
+
+{% block title %}
+Mantenimientos
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <span class="page-label">
+            GESTIÓN
+        </span>
+
+        <h2>
+            Mantenimientos
+        </h2>
+
+        <p>
+            Historial y control de mantenimiento de los vehículos.
+        </p>
+    </div>
+
+    {% user_has_permission request.user 'maintenance' 2 as can_create_maintenance %}
+
+    {% if can_create_maintenance %}
+
+        <a
+            href="{% url 'maintenance_create' %}"
+            class="btn-primary"
+        >
+            + Registrar mantenimiento
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h3>
+                Historial de mantenimientos
+            </h3>
+
+            <p>
+                Registro de las actividades realizadas y programadas.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table class="data-table maintenance-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Vehículo
+                    </th>
+
+                    <th>
+                        Tipo
+                    </th>
+
+                    <th>
+                        Categoría
+                    </th>
+
+                    <th>
+                        Fecha
+                    </th>
+
+                    <th>
+                        Kilometraje
+                    </th>
+
+                    <th>
+                        Costo
+                    </th>
+
+                    <th>
+                        Estado
+                    </th>
+
+                    <th>
+                        Acciones
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for maintenance in maintenances %}
+
+                <tr>
+
+                    <td>
+
+                        <a
+                            href="{% url 'maintenance_detail' maintenance.id %}"
+                            class="maintenance-vehicle"
+                        >
+
+                            <strong>
+                                {{ maintenance.vehicle.brand }}
+                                {{ maintenance.vehicle.model }}
+                            </strong>
+
+                            <span>
+                                {{ maintenance.vehicle.plate }}
+                            </span>
+
+                        </a>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="maintenance-type">
+                            {{ maintenance.get_maintenance_type_display }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if maintenance.category == 'preventive' %}
+
+                            <span class="status-badge status-active">
+                                Preventivo
+                            </span>
+
+                        {% elif maintenance.category == 'corrective' %}
+
+                            <span class="status-badge status-maintenance">
+                                Correctivo
+                            </span>
+
+                        {% else %}
+
+                            <span class="status-badge">
+                                {{ maintenance.get_category_display }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="maintenance-date">
+                            {{ maintenance.date|date:"d/m/Y" }}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="maintenance-mileage">
+                            {{ maintenance.mileage|spanish_number }} km
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <strong class="maintenance-cost">
+                            ${{ maintenance.cost|spanish_currency }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if maintenance.status == 'scheduled' %}
+
+                            <span class="status-badge status-maintenance">
+                                {{ maintenance.get_status_display }}
+                            </span>
+
+                        {% elif maintenance.status == 'in_progress' %}
+
+                            <span class="status-badge status-active">
+                                {{ maintenance.get_status_display }}
+                            </span>
+
+                        {% elif maintenance.status == 'completed' %}
+
+                            <span class="status-badge status-active">
+                                {{ maintenance.get_status_display }}
+                            </span>
+
+                        {% elif maintenance.status == 'cancelled' %}
+
+                            <span class="status-badge status-out">
+                                {{ maintenance.get_status_display }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="table-actions">
+
+                            <a
+                                href="{% url 'maintenance_detail' maintenance.id %}"
+                                class="action-link"
+                            >
+                                Ver detalle
+                            </a>
+
+
+                            {% user_has_permission request.user 'maintenance' 2 as can_edit_maintenance %}
+
+                            {% if can_edit_maintenance %}
+
+                                <a
+                                    href="{% url 'maintenance_update' maintenance.id %}"
+                                    class="action-link-secondary"
+                                >
+                                    Editar
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="empty-state-cell"
+                    >
+
+                        <div class="empty-state">
+
+                            <strong>
+                                No hay mantenimientos registrados
+                            </strong>
+
+                            <p>
+                                Los mantenimientos registrados aparecerán aquí.
+                            </p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

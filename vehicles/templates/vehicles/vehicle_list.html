@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% load permission_tags %}
+{% load report_filters %}
+
+{% block title %}
+Vehículos | Fleet Management
+{% endblock %}
+
+
+{% block content %}
+
+{% user_has_permission request.user 'vehicles' 2 as can_create_vehicle %}
+
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Vehículos
+        </h1>
+
+        <p>
+            Gestiona y consulta los vehículos registrados en la flota.
+        </p>
+
+    </div>
+
+
+    {% if can_create_vehicle %}
+
+        <a
+            href="{% url 'vehicle_create' %}"
+            class="btn btn-primary"
+        >
+            + Registrar vehículo
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Resumen -->
+
+<div class="module-summary">
+
+    <div class="summary-card">
+
+        <span>
+            Total de vehículos
+        </span>
+
+        <strong>
+            {{ vehicles|length }}
+        </strong>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <span>
+            Activos
+        </span>
+
+        <strong>
+            {{ active_vehicles }}
+        </strong>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <span>
+            En mantenimiento
+        </span>
+
+        <strong>
+            {{ maintenance_vehicles }}
+        </strong>
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <span>
+            Fuera de servicio
+        </span>
+
+        <strong>
+            {{ out_service_vehicles }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<!-- Tabla -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Flota registrada
+            </h2>
+
+            <p>
+                Selecciona un vehículo para consultar su información.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if vehicles %}
+
+        <div class="table-container">
+
+            <table class="dashboard-table vehicle-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Vehículo
+                        </th>
+
+                        <th>
+                            Placa
+                        </th>
+
+                        <th>
+                            Número interno
+                        </th>
+
+                        <th>
+                            Tipo
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Kilometraje
+                        </th>
+
+                        <th>
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for vehicle in vehicles %}
+
+                        <tr>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'vehicle_detail' vehicle.id %}"
+                                    class="vehicle-name"
+                                >
+
+                                    <strong>
+                                        {{ vehicle.brand }}
+                                        {{ vehicle.model }}
+                                    </strong>
+
+                                    <span>
+                                        {{ vehicle.year }}
+                                    </span>
+
+                                </a>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="plate-badge">
+                                    {{ vehicle.plate }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if vehicle.internal_number %}
+
+                                    {{ vehicle.internal_number }}
+
+                                {% else %}
+
+                                    <span class="text-muted">
+                                        No asignado
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                {{ vehicle.get_vehicle_type_display }}
+                            </td>
+
+
+                            <td>
+
+                                {% if vehicle.status == 'active' %}
+
+                                    <span class="status-badge status-active">
+                                        Activo
+                                    </span>
+
+                                {% elif vehicle.status == 'maintenance' %}
+
+                                    <span class="status-badge status-maintenance">
+                                        En mantenimiento
+                                    </span>
+
+                                {% elif vehicle.status == 'out_of_service' %}
+
+                                    <span class="status-badge status-out">
+                                        Fuera de servicio
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    {{ vehicle.current_mileage|spanish_number }}
+                                </strong>
+
+                                km
+
+                            </td>
+
+
+                            <td>
+
+                                <a
+                                    href="{% url 'vehicle_detail' vehicle.id %}"
+                                    class="table-action"
+                                >
+                                    Ver detalle →
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h3>
+                No hay vehículos registrados
+            </h3>
+
+            <p>
+                Todavía no se han registrado vehículos en la flota.
+            </p>
+
+
+            {% if can_create_vehicle %}
+
+                <a
+                    href="{% url 'vehicle_create' %}"
+                    class="btn btn-primary"
+                >
+                    Registrar primer vehículo
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+{% endblock %}

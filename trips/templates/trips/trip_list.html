@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% load permission_tags %}
+
+{% block title %}
+Viajes | Fleet Management
+{% endblock %}
+
+
+{% block content %}
+
+{% user_has_permission request.user 'trips' 2 as can_create_trip %}
+
+
+<div class="page-header">
+
+    <div>
+
+        <h1>
+            Viajes
+        </h1>
+
+        <p>
+            Gestiona y consulta los viajes realizados y programados.
+        </p>
+
+    </div>
+
+
+    {% if can_create_trip %}
+
+        <a
+            href="{% url 'trip_create' %}"
+            class="btn btn-primary"
+        >
+            + Registrar viaje
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Viajes registrados
+            </h2>
+
+            <p>
+                Selecciona un viaje para consultar su información.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if trips %}
+
+        <div class="table-container">
+
+            <table class="dashboard-table trip-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Ruta
+                        </th>
+
+                        <th>
+                            Vehículo
+                        </th>
+
+                        <th>
+                            Conductor
+                        </th>
+
+                        <th>
+                            Salida
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for trip in trips %}
+
+                        <tr>
+
+                            <td>
+
+                                <a
+                                    href="{% url 'trip_detail' trip.id %}"
+                                    class="trip-route"
+                                >
+
+                                    <strong>
+                                        {{ trip.origin }}
+                                    </strong>
+
+                                    <span>
+                                        → {{ trip.destination }}
+                                    </span>
+
+                                </a>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="trip-vehicle">
+                                    {{ trip.vehicle.brand }}
+                                    {{ trip.vehicle.model }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="trip-driver">
+                                    {{ trip.driver.first_name }}
+                                    {{ trip.driver.last_name }}
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="trip-date">
+
+                                    {{ trip.departure_date|date:"d/m/Y" }}
+
+                                    <small>
+                                        {{ trip.departure_date|date:"H:i" }}
+                                    </small>
+
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if trip.status == 'scheduled' %}
+
+                                    <span class="status-badge status-maintenance">
+                                        Programado
+                                    </span>
+
+                                {% elif trip.status == 'in_progress' %}
+
+                                    <span class="status-badge status-maintenance">
+                                        En curso
+                                    </span>
+
+                                {% elif trip.status == 'completed' %}
+
+                                    <span class="status-badge status-active">
+                                        Completado
+                                    </span>
+
+                                {% elif trip.status == 'cancelled' %}
+
+                                    <span class="status-badge status-out">
+                                        Cancelado
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <a
+                                    href="{% url 'trip_detail' trip.id %}"
+                                    class="table-action"
+                                >
+                                    Ver detalle →
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <h3>
+                No hay viajes registrados
+            </h3>
+
+            <p>
+                Todavía no se han registrado viajes en el sistema.
+            </p>
+
+
+            {% if can_create_trip %}
+
+                <a
+                    href="{% url 'trip_create' %}"
+                    class="btn btn-primary"
+                >
+                    Registrar primer viaje
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,725 @@
+{% extends "base.html" %}
+
+{% load permission_tags %}
+{% load report_filters %}
+
+{% block title %}
+{{ vehicle.brand }} {{ vehicle.model }} | Fleet Management
+{% endblock %}
+
+
+{% block content %}
+
+{% user_has_permission request.user 'vehicles' 2 as can_edit_vehicle %}
+
+
+<!-- Encabezado -->
+
+<div class="page-header">
+
+    <div>
+
+        <a
+            href="{% url 'vehicle_list' %}"
+            class="back-link"
+        >
+            ← Volver a vehículos
+        </a>
+
+        <h1 class="detail-title">
+            {{ vehicle.brand }} {{ vehicle.model }}
+        </h1>
+
+        <p>
+            Información y actividad del vehículo.
+        </p>
+
+    </div>
+
+
+    {% if can_edit_vehicle %}
+
+        <a
+            href="{% url 'vehicle_edit' vehicle.id %}"
+            class="btn btn-primary"
+        >
+            Editar vehículo
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Información principal -->
+
+<div class="detail-grid">
+
+
+    <!-- Datos del vehículo -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Información del vehículo
+                </h2>
+
+                <p>
+                    Datos generales de la unidad.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="vehicle-info-grid">
+
+
+            <div class="info-item">
+
+                <span>
+                    Placa
+                </span>
+
+                <strong>
+                    {{ vehicle.plate }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Número interno
+                </span>
+
+                <strong>
+
+                    {% if vehicle.internal_number %}
+                        {{ vehicle.internal_number }}
+                    {% else %}
+                        <span class="text-muted">
+                            No asignado
+                        </span>
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Marca
+                </span>
+
+                <strong>
+                    {{ vehicle.brand }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Modelo
+                </span>
+
+                <strong>
+                    {{ vehicle.model }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Año
+                </span>
+
+                <strong>
+                    {{ vehicle.year }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Tipo
+                </span>
+
+                <strong>
+                    {{ vehicle.get_vehicle_type_display }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- Estado -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Estado actual
+                </h2>
+
+                <p>
+                    Situación operativa del vehículo.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="vehicle-status-panel">
+
+
+            <div class="status-large">
+
+                {% if vehicle.status == 'active' %}
+
+                    <span class="status-badge status-active">
+                        Activo
+                    </span>
+
+                    <p>
+                        El vehículo se encuentra disponible para operaciones.
+                    </p>
+
+                {% elif vehicle.status == 'maintenance' %}
+
+                    <span class="status-badge status-maintenance">
+                        En mantenimiento
+                    </span>
+
+                    <p>
+                        El vehículo se encuentra actualmente en mantenimiento.
+                    </p>
+
+                {% elif vehicle.status == 'out_of_service' %}
+
+                    <span class="status-badge status-out">
+                        Fuera de servicio
+                    </span>
+
+                    <p>
+                        El vehículo no está disponible para operaciones.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="mileage-display">
+
+                <span>
+                    Kilometraje actual
+                </span>
+
+                <strong>
+                    {{ vehicle.current_mileage|spanish_number }}
+                </strong>
+
+                <small>
+                    km
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Mantenimientos destacados -->
+
+<div class="dashboard-grid">
+
+
+    <!-- Último mantenimiento -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Último mantenimiento
+                </h2>
+
+                <p>
+                    Mantenimiento completado más reciente.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if last_maintenance %}
+
+            <div class="maintenance-detail">
+
+                <div class="detail-row">
+
+                    <span>
+                        Fecha
+                    </span>
+
+                    <strong>
+                        {{ last_maintenance.date|date:"d/m/Y" }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        Tipo
+                    </span>
+
+                    <strong>
+                        {{ last_maintenance.get_maintenance_type_display }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        Categoría
+                    </span>
+
+                    <strong>
+                        {{ last_maintenance.get_category_display }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        Kilometraje
+                    </span>
+
+                    <strong>
+                        {{ last_maintenance.mileage|spanish_number }} km
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        Costo
+                    </span>
+
+                    <strong>
+                        ${{ last_maintenance.cost|spanish_currency }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state-small">
+
+                <p>
+                    No hay mantenimientos completados.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Próximo mantenimiento -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Próximo mantenimiento
+                </h2>
+
+                <p>
+                    Mantenimiento programado más cercano.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        {% if next_maintenance %}
+
+            <div class="maintenance-detail">
+
+                <div class="detail-row">
+
+                    <span>
+                        Fecha
+                    </span>
+
+                    <strong>
+                        {{ next_maintenance.date|date:"d/m/Y" }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        Tipo
+                    </span>
+
+                    <strong>
+                        {{ next_maintenance.get_maintenance_type_display }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <span>
+                        Descripción
+                    </span>
+
+                    <strong>
+                        {{ next_maintenance.description }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state-small">
+
+                <p>
+                    No hay mantenimientos programados.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- Historial de mantenimiento -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Historial de mantenimiento
+            </h2>
+
+            <p>
+                Registro de mantenimientos asociados a este vehículo.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if maintenances %}
+
+        <div class="table-container">
+
+            <table class="dashboard-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Fecha
+                        </th>
+
+                        <th>
+                            Tipo
+                        </th>
+
+                        <th>
+                            Categoría
+                        </th>
+
+                        <th>
+                            Kilometraje
+                        </th>
+
+                        <th>
+                            Costo
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for maintenance in maintenances %}
+
+                        <tr>
+
+                            <td>
+                                {{ maintenance.date|date:"d/m/Y" }}
+                            </td>
+
+                            <td>
+                                {{ maintenance.get_maintenance_type_display }}
+                            </td>
+
+                            <td>
+                                {{ maintenance.get_category_display }}
+                            </td>
+
+                            <td>
+                                {{ maintenance.mileage|spanish_number }} km
+                            </td>
+
+                            <td>
+                                ${{ maintenance.cost|spanish_currency }}
+                            </td>
+
+                            <td>
+
+                                {% if maintenance.status == 'completed' %}
+
+                                    <span class="status-badge status-active">
+                                        Completado
+                                    </span>
+
+                                {% elif maintenance.status == 'scheduled' %}
+
+                                    <span class="status-badge status-maintenance">
+                                        Programado
+                                    </span>
+
+                                {% elif maintenance.status == 'in_progress' %}
+
+                                    <span class="status-badge status-maintenance">
+                                        En proceso
+                                    </span>
+
+                                {% elif maintenance.status == 'cancelled' %}
+
+                                    <span class="status-badge status-out">
+                                        Cancelado
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state-small">
+
+            <p>
+                No hay mantenimientos registrados para este vehículo.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Historial de viajes -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Historial de viajes
+            </h2>
+
+            <p>
+                Viajes realizados con este vehículo.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if trips %}
+
+        <div class="table-container">
+
+            <table class="dashboard-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Origen
+                        </th>
+
+                        <th>
+                            Destino
+                        </th>
+
+                        <th>
+                            Conductor
+                        </th>
+
+                        <th>
+                            Salida
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for trip in trips %}
+
+                        <tr>
+
+                            <td>
+                                {{ trip.origin }}
+                            </td>
+
+                            <td>
+                                {{ trip.destination }}
+                            </td>
+
+                            <td>
+                                {{ trip.driver }}
+                            </td>
+
+                            <td>
+                                {{ trip.departure_date|date:"d/m/Y H:i" }}
+                            </td>
+
+                            <td>
+
+                                {% if trip.status == 'completed' %}
+
+                                    <span class="status-badge status-active">
+                                        Completado
+                                    </span>
+
+                                {% elif trip.status == 'scheduled' %}
+
+                                    <span class="status-badge status-maintenance">
+                                        Programado
+                                    </span>
+
+                                {% elif trip.status == 'in_progress' %}
+
+                                    <span class="status-badge status-maintenance">
+                                        En curso
+                                    </span>
+
+                                {% elif trip.status == 'cancelled' %}
+
+                                    <span class="status-badge status-out">
+                                        Cancelado
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state-small">
+
+            <p>
+                No hay viajes registrados para este vehículo.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,686 @@
+{% extends "base.html" %}
+
+{% load report_filters %}
+
+{% block title %}
+Dashboard | Fleet Management
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>Dashboard operativo</h1>
+        <p>Resumen general de la flota y sus operaciones.</p>
+    </div>
+
+</div>
+
+
+<!-- Tarjetas principales -->
+
+<div class="dashboard-cards">
+
+    <div class="dashboard-card">
+
+        <span class="card-label">
+            Vehículos
+        </span>
+
+        <strong class="card-value">
+            {{ total_vehicles }}
+        </strong>
+
+        <span class="card-detail">
+            {{ active_vehicles }} activos
+        </span>
+
+    </div>
+
+
+    <div class="dashboard-card">
+
+        <span class="card-label">
+            Conductores
+        </span>
+
+        <strong class="card-value">
+            {{ total_drivers }}
+        </strong>
+
+        <span class="card-detail">
+            {{ active_drivers }} activos
+        </span>
+
+    </div>
+
+
+    <div class="dashboard-card">
+
+        <span class="card-label">
+            Viajes
+        </span>
+
+        <strong class="card-value">
+            {{ total_trips }}
+        </strong>
+
+        <span class="card-detail">
+            {{ completed_trips }} completados
+        </span>
+
+    </div>
+
+
+    <div class="dashboard-card">
+
+        <span class="card-label">
+            Mantenimientos
+        </span>
+
+        <strong class="card-value">
+            {{ total_maintenance }}
+        </strong>
+
+        <span class="card-detail">
+            Registros realizados
+        </span>
+
+    </div>
+
+</div>
+
+
+<!-- Resumen de costos -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Costos del mes actual</h2>
+            <p>Resumen de gastos operativos y mantenimiento.</p>
+        </div>
+
+    </div>
+
+
+    <div class="cost-cards">
+
+        <div class="cost-card">
+
+            <span>
+                Gastos operativos
+            </span>
+
+            <strong>
+                ${{ current_month_expenses|spanish_currency }}
+            </strong>
+
+        </div>
+
+
+        <div class="cost-card">
+
+            <span>
+                Mantenimiento
+            </span>
+
+            <strong>
+                ${{ current_month_maintenance|spanish_currency }}
+            </strong>
+
+        </div>
+
+
+        <div class="cost-card cost-card-total">
+
+            <span>
+                Costo total
+            </span>
+
+            <strong>
+                ${{ current_month_total|spanish_currency }}
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Alertas -->
+
+<div class="dashboard-grid">
+
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Alertas de conductores</h2>
+                <p>Estado de las licencias.</p>
+            </div>
+
+        </div>
+
+
+        <div class="alert-list">
+
+            <div class="alert-item">
+
+                <div>
+                    <strong>
+                        Licencias vencidas
+                    </strong>
+
+                    <span>
+                        {{ expired_licenses|length }}
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="alert-item">
+
+                <div>
+                    <strong>
+                        Próximas a vencer
+                    </strong>
+
+                    <span>
+                        {{ expiring_licenses|length }}
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Estado de mantenimiento</h2>
+                <p>Vehículos que requieren atención.</p>
+            </div>
+
+        </div>
+
+
+        <div class="alert-list">
+
+            <div class="alert-item">
+
+                <div>
+                    <strong>
+                        En mantenimiento
+                    </strong>
+
+                    <span>
+                        {{ vehicles_in_maintenance|length }}
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="alert-item">
+
+                <div>
+                    <strong>
+                        Programados
+                    </strong>
+
+                    <span>
+                        {{ scheduled_maintenance|length }}
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+<!-- Costos por vehículo -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Costos por vehículo</h2>
+            <p>Gastos y mantenimiento registrados durante el mes actual.</p>
+        </div>
+
+    </div>
+
+
+    <div class="table-container">
+
+        <table class="dashboard-table">
+
+            <thead>
+
+                <tr>
+                    <th>Vehículo</th>
+                    <th>Gastos operativos</th>
+                    <th>Mantenimiento</th>
+                    <th>Costo total</th>
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in vehicle_monthly_costs %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                {{ item.vehicle.brand }}
+                                {{ item.vehicle.model }}
+                            </strong>
+
+                            <span class="table-secondary">
+                                {{ item.vehicle.plate }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            ${{ item.expenses|spanish_currency }}
+                        </td>
+
+
+                        <td>
+                            ${{ item.maintenance|spanish_currency }}
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                ${{ item.total|spanish_currency }}
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="4">
+                            No hay información disponible.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- Mantenimiento acumulado -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+            <h2>Mantenimiento acumulado por categoría</h2>
+            <p>Distribución histórica de los costos de mantenimiento.</p>
+        </div>
+
+    </div>
+
+
+    <div class="maintenance-summary">
+
+        <div class="maintenance-item">
+
+            <span>
+                Preventivo
+            </span>
+
+            <strong>
+                ${{ preventive_maintenance|spanish_currency }}
+            </strong>
+
+        </div>
+
+
+        <div class="maintenance-item">
+
+            <span>
+                Correctivo
+            </span>
+
+            <strong>
+                ${{ corrective_maintenance|spanish_currency }}
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Gastos y kilometraje -->
+
+<div class="dashboard-grid">
+
+    <!-- Gastos por categoría -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Gastos por categoría</h2>
+                <p>Distribución de los gastos registrados.</p>
+            </div>
+
+        </div>
+
+
+        <div class="category-list">
+
+            <div class="category-item">
+                <span>Combustible</span>
+                <strong>
+                    ${{ fuel_expenses|spanish_currency }}
+                </strong>
+            </div>
+
+            <div class="category-item">
+                <span>Peajes</span>
+                <strong>
+                    ${{ toll_expenses|spanish_currency }}
+                </strong>
+            </div>
+
+            <div class="category-item">
+                <span>Viáticos</span>
+                <strong>
+                    ${{ allowance_expenses|spanish_currency }}
+                </strong>
+            </div>
+
+            <div class="category-item">
+                <span>Lavado</span>
+                <strong>
+                    ${{ washing_expenses|spanish_currency }}
+                </strong>
+            </div>
+
+            <div class="category-item">
+                <span>Seguro</span>
+                <strong>
+                    ${{ insurance_expenses|spanish_currency }}
+                </strong>
+            </div>
+
+            <div class="category-item">
+                <span>Otros</span>
+                <strong>
+                    ${{ other_expenses|spanish_currency }}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Kilometraje -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Kilometraje de la flota</h2>
+                <p>Indicadores generales de recorrido.</p>
+            </div>
+
+        </div>
+
+
+        <div class="mileage-summary">
+
+            <div class="mileage-item">
+
+                <span>
+                    Promedio de la flota
+                </span>
+
+                <strong>
+                    {{ average_mileage|spanish_number }} km
+                </strong>
+
+            </div>
+
+
+            <div class="mileage-item">
+
+                <span>
+                    Mayor kilometraje
+                </span>
+
+                <strong>
+                    {{ highest_mileage|spanish_number }} km
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- Alertas detalladas -->
+
+<div class="dashboard-grid">
+
+    <!-- Licencias -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Licencias de conductores</h2>
+                <p>Conductores que requieren atención.</p>
+            </div>
+
+        </div>
+
+
+        {% if expired_licenses %}
+
+            <div class="detail-alert danger">
+
+                <strong>
+                    Licencias vencidas
+                </strong>
+
+                {% for driver in expired_licenses %}
+
+                    <div class="alert-detail-row">
+
+                        <span>
+                            {{ driver.first_name }}
+                            {{ driver.last_name }}
+                        </span>
+
+                        <span>
+                            {{ driver.license_expiry|date:"d/m/Y" }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="detail-alert success">
+
+                <strong>
+                    Todo en orden
+                </strong>
+
+                <span>
+                    No hay licencias vencidas.
+                </span>
+
+            </div>
+
+        {% endif %}
+
+
+        {% if expiring_licenses %}
+
+            <div class="detail-alert warning">
+
+                <strong>
+                    Próximas a vencer
+                </strong>
+
+                {% for driver in expiring_licenses %}
+
+                    <div class="alert-detail-row">
+
+                        <span>
+                            {{ driver.first_name }}
+                            {{ driver.last_name }}
+                        </span>
+
+                        <span>
+                            {{ driver.license_expiry|date:"d/m/Y" }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Mantenimiento -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Mantenimiento pendiente</h2>
+                <p>Vehículos que requieren seguimiento.</p>
+            </div>
+
+        </div>
+
+
+        {% if vehicles_in_maintenance %}
+
+            <div class="detail-alert warning">
+
+                <strong>
+                    Vehículos en mantenimiento
+                </strong>
+
+                {% for vehicle in vehicles_in_maintenance %}
+
+                    <div class="alert-detail-row">
+
+                        <span>
+                            {{ vehicle.brand }}
+                            {{ vehicle.model }}
+                        </span>
+
+                        <span>
+                            {{ vehicle.plate }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+
+        {% if scheduled_maintenance %}
+
+            <div class="detail-alert info">
+
+                <strong>
+                    Próximos mantenimientos
+                </strong>
+
+                {% for maintenance in scheduled_maintenance %}
+
+                    <div class="alert-detail-row">
+
+                        <span>
+                            {{ maintenance.vehicle.brand }}
+                            {{ maintenance.vehicle.model }}
+                        </span>
+
+                        <span>
+                            {{ maintenance.date|date:"d/m/Y" }}
+                        </span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="detail-alert success">
+
+                <strong>
+                    Sin mantenimientos programados
+                </strong>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}

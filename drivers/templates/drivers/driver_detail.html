@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+
+{% load permission_tags %}
+
+{% block title %}
+{{ driver.first_name }} {{ driver.last_name }} | Fleet Management
+{% endblock %}
+
+
+{% block content %}
+
+{% user_has_permission request.user 'drivers' 2 as can_edit_driver %}
+
+
+<div class="page-header">
+
+    <div>
+
+        <a
+            href="{% url 'driver_list' %}"
+            class="back-link"
+        >
+            ← Volver a conductores
+        </a>
+
+        <h1 class="detail-title">
+            {{ driver.first_name }} {{ driver.last_name }}
+        </h1>
+
+        <p>
+            Información personal, laboral y de licencia del conductor.
+        </p>
+
+    </div>
+
+
+    {% if can_edit_driver %}
+
+        <a
+            href="{% url 'driver_edit' driver.id %}"
+            class="btn btn-primary"
+        >
+            Editar conductor
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<div class="detail-grid">
+
+
+    <!-- Información personal -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Información personal
+                </h2>
+
+                <p>
+                    Datos generales del conductor.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="vehicle-info-grid">
+
+
+            <div class="info-item">
+
+                <span>
+                    Nombre completo
+                </span>
+
+                <strong>
+                    {{ driver.first_name }}
+                    {{ driver.last_name }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Identificación
+                </span>
+
+                <strong>
+                    {{ driver.identification }}
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Teléfono
+                </span>
+
+                <strong>
+
+                    {% if driver.phone %}
+                        {{ driver.phone }}
+                    {% else %}
+                        <span class="text-muted">
+                            No registrado
+                        </span>
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span>
+                    Fecha de nacimiento
+                </span>
+
+                <strong>
+
+                    {% if driver.birth_date %}
+                        {{ driver.birth_date|date:"d/m/Y" }}
+                    {% else %}
+                        <span class="text-muted">
+                            No registrada
+                        </span>
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+
+            <div
+                class="info-item"
+                style="grid-column: 1 / -1;"
+            >
+
+                <span>
+                    Dirección
+                </span>
+
+                <strong>
+
+                    {% if driver.address %}
+                        {{ driver.address }}
+                    {% else %}
+                        <span class="text-muted">
+                            No registrada
+                        </span>
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Licencia -->
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Licencia de conducir
+                </h2>
+
+                <p>
+                    Información de la licencia registrada.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="maintenance-detail">
+
+
+            <div class="detail-row">
+
+                <span>
+                    Número de licencia
+                </span>
+
+                <strong>
+                    {{ driver.license_number }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Tipo de licencia
+                </span>
+
+                <strong>
+                    {{ driver.license_type }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Fecha de vencimiento
+                </span>
+
+                <strong>
+                    {{ driver.license_expiry|date:"d/m/Y" }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Estado del conductor
+                </span>
+
+                <strong>
+
+                    {% if driver.status == 'active' %}
+
+                        <span class="status-badge status-active">
+                            Activo
+                        </span>
+
+                    {% elif driver.status == 'inactive' %}
+
+                        <span class="status-badge status-maintenance">
+                            Inactivo
+                        </span>
+
+                    {% elif driver.status == 'suspended' %}
+
+                        <span class="status-badge status-out">
+                            Suspendido
+                        </span>
+
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="driver-license-status">
+
+            {% if driver.status == 'active' %}
+
+                <span class="status-badge status-active">
+                    Licencia asociada a conductor activo
+                </span>
+
+                <p>
+                    El conductor se encuentra habilitado según su estado actual en el sistema.
+                </p>
+
+            {% elif driver.status == 'inactive' %}
+
+                <span class="status-badge status-maintenance">
+                    Conductor inactivo
+                </span>
+
+                <p>
+                    El conductor actualmente no se encuentra activo en el sistema.
+                </p>
+
+            {% elif driver.status == 'suspended' %}
+
+                <span class="status-badge status-out">
+                    Conductor suspendido
+                </span>
+
+                <p>
+                    El conductor se encuentra suspendido actualmente.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Información laboral -->
+
+<div class="dashboard-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <h2>
+                Información laboral
+            </h2>
+
+            <p>
+                Información relacionada con el ingreso del conductor.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="vehicle-info-grid">
+
+
+        <div class="info-item">
+
+            <span>
+                Fecha de ingreso
+            </span>
+
+            <strong>
+
+                {% if driver.hire_date %}
+                    {{ driver.hire_date|date:"d/m/Y" }}
+                {% else %}
+                    <span class="text-muted">
+                        No registrada
+                    </span>
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+
+        <div class="info-item">
+
+            <span>
+                Estado actual
+            </span>
+
+            <strong>
+
+                {% if driver.status == 'active' %}
+
+                    <span class="status-badge status-active">
+                        Activo
+                    </span>
+
+                {% elif driver.status == 'inactive' %}
+
+                    <span class="status-badge status-maintenance">
+                        Inactivo
+                    </span>
+
+                {% elif driver.status == 'suspended' %}
+
+                    <span class="status-badge status-out">
+                        Suspendido
+                    </span>
+
+                {% endif %}
+
+            </strong>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

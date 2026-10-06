@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if driver %}
+    Editar conductor | Fleet Management
+{% else %}
+    Registrar conductor | Fleet Management
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <a
+            href="{% url 'driver_list' %}"
+            class="back-link"
+        >
+            ← Volver a conductores
+        </a>
+
+        <h1>
+            {% if driver %}
+                Editar conductor
+            {% else %}
+                Registrar conductor
+            {% endif %}
+        </h1>
+
+        <p>
+
+            {% if driver %}
+                Actualiza la información del conductor seleccionado.
+            {% else %}
+                Registra un nuevo conductor en el sistema.
+            {% endif %}
+
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="form-container">
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Información del conductor
+                </h2>
+
+                <p>
+                    Completa los datos personales, de licencia y laborales.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form method="POST" class="driver-form">
+
+            {% csrf_token %}
+
+
+            {% if form.non_field_errors %}
+
+                <div class="form-errors">
+
+                    {% for error in form.non_field_errors %}
+
+                        <p>
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <div class="form-subsection">
+
+                <h3>
+                    Información personal
+                </h3>
+
+                <p>
+                    Datos generales del conductor.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.first_name.id_for_label }}">
+                        Nombre
+                    </label>
+
+                    {{ form.first_name }}
+
+                    {% if form.first_name.errors %}
+
+                        <div class="field-error">
+                            {{ form.first_name.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.last_name.id_for_label }}">
+                        Apellido
+                    </label>
+
+                    {{ form.last_name }}
+
+                    {% if form.last_name.errors %}
+
+                        <div class="field-error">
+                            {{ form.last_name.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.identification.id_for_label }}">
+                        Identificación
+                    </label>
+
+                    {{ form.identification }}
+
+                    {% if form.identification.errors %}
+
+                        <div class="field-error">
+                            {{ form.identification.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.phone.id_for_label }}">
+                        Teléfono
+                    </label>
+
+                    {{ form.phone }}
+
+                    {% if form.phone.errors %}
+
+                        <div class="field-error">
+                            {{ form.phone.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.birth_date.id_for_label }}">
+                        Fecha de nacimiento
+                    </label>
+
+                    {{ form.birth_date }}
+
+                    {% if form.birth_date.errors %}
+
+                        <div class="field-error">
+                            {{ form.birth_date.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.address.id_for_label }}">
+                        Dirección
+                    </label>
+
+                    {{ form.address }}
+
+                    {% if form.address.errors %}
+
+                        <div class="field-error">
+                            {{ form.address.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="form-subsection">
+
+                <h3>
+                    Información de licencia
+                </h3>
+
+                <p>
+                    Datos de la licencia de conducir.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.license_number.id_for_label }}">
+                        Número de licencia
+                    </label>
+
+                    {{ form.license_number }}
+
+                    {% if form.license_number.errors %}
+
+                        <div class="field-error">
+                            {{ form.license_number.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.license_type.id_for_label }}">
+                        Tipo de licencia
+                    </label>
+
+                    {{ form.license_type }}
+
+                    {% if form.license_type.errors %}
+
+                        <div class="field-error">
+                            {{ form.license_type.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.license_expiry.id_for_label }}">
+                        Vencimiento de licencia
+                    </label>
+
+                    {{ form.license_expiry }}
+
+                    {% if form.license_expiry.errors %}
+
+                        <div class="field-error">
+                            {{ form.license_expiry.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.status.id_for_label }}">
+                        Estado
+                    </label>
+
+                    {{ form.status }}
+
+                    {% if form.status.errors %}
+
+                        <div class="field-error">
+                            {{ form.status.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="form-subsection">
+
+                <h3>
+                    Información laboral
+                </h3>
+
+                <p>
+                    Información relacionada con la incorporación del conductor.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.hire_date.id_for_label }}">
+                        Fecha de ingreso
+                    </label>
+
+                    {{ form.hire_date }}
+
+                    {% if form.hire_date.errors %}
+
+                        <div class="field-error">
+                            {{ form.hire_date.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a
+                    href="{% url 'driver_list' %}"
+                    class="btn btn-secondary"
+                >
+                    Cancelar
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+
+                    {% if driver %}
+                        Actualizar conductor
+                    {% else %}
+                        Guardar conductor
+                    {% endif %}
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

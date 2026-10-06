@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if trip %}
+    Editar viaje | Fleet Management
+{% else %}
+    Registrar viaje | Fleet Management
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+
+        <a
+            href="{% url 'trip_list' %}"
+            class="back-link"
+        >
+            ← Volver a viajes
+        </a>
+
+        <h1>
+
+            {% if trip %}
+                Editar viaje
+            {% else %}
+                Registrar viaje
+            {% endif %}
+
+        </h1>
+
+        <p>
+
+            {% if trip %}
+                Actualiza la información del viaje seleccionado.
+            {% else %}
+                Registra un nuevo viaje y asigna el vehículo y conductor.
+            {% endif %}
+
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="form-container">
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Información del viaje
+                </h2>
+
+                <p>
+                    Completa los datos del recorrido y su operación.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form method="POST" class="trip-form">
+
+            {% csrf_token %}
+
+
+            {% if form.non_field_errors %}
+
+                <div class="form-errors">
+
+                    {% for error in form.non_field_errors %}
+
+                        <p>
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- Ruta y asignación -->
+
+            <div class="form-subsection">
+
+                <h3>
+                    Ruta y asignación
+                </h3>
+
+                <p>
+                    Define el recorrido, vehículo y conductor responsables del viaje.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.vehicle.id_for_label }}">
+                        Vehículo
+                    </label>
+
+                    {{ form.vehicle }}
+
+                    {% if form.vehicle.errors %}
+
+                        <div class="field-error">
+                            {{ form.vehicle.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.driver.id_for_label }}">
+                        Conductor
+                    </label>
+
+                    {{ form.driver }}
+
+                    {% if form.driver.errors %}
+
+                        <div class="field-error">
+                            {{ form.driver.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.origin.id_for_label }}">
+                        Origen
+                    </label>
+
+                    {{ form.origin }}
+
+                    {% if form.origin.errors %}
+
+                        <div class="field-error">
+                            {{ form.origin.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.destination.id_for_label }}">
+                        Destino
+                    </label>
+
+                    {{ form.destination }}
+
+                    {% if form.destination.errors %}
+
+                        <div class="field-error">
+                            {{ form.destination.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- Fechas -->
+
+            <div class="form-subsection">
+
+                <h3>
+                    Fechas del viaje
+                </h3>
+
+                <p>
+                    Registra las fechas de salida y llegada del recorrido.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.departure_date.id_for_label }}">
+                        Fecha y hora de salida
+                    </label>
+
+                    {{ form.departure_date }}
+
+                    {% if form.departure_date.errors %}
+
+                        <div class="field-error">
+                            {{ form.departure_date.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.arrival_date.id_for_label }}">
+                        Fecha y hora de llegada
+                    </label>
+
+                    {{ form.arrival_date }}
+
+                    {% if form.arrival_date.errors %}
+
+                        <div class="field-error">
+                            {{ form.arrival_date.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                    <small>
+                        Puede dejarse vacío mientras el viaje no haya finalizado.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Kilometraje -->
+
+            <div class="form-subsection">
+
+                <h3>
+                    Kilometraje
+                </h3>
+
+                <p>
+                    Registra el kilometraje utilizado para controlar el recorrido.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.initial_mileage.id_for_label }}">
+                        Kilometraje inicial
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        {{ form.initial_mileage }}
+
+                        <span>
+                            km
+                        </span>
+
+                    </div>
+
+                    {% if form.initial_mileage.errors %}
+
+                        <div class="field-error">
+                            {{ form.initial_mileage.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.final_mileage.id_for_label }}">
+                        Kilometraje final
+                    </label>
+
+                    <div class="input-with-unit">
+
+                        {{ form.final_mileage }}
+
+                        <span>
+                            km
+                        </span>
+
+                    </div>
+
+                    {% if form.final_mileage.errors %}
+
+                        <div class="field-error">
+                            {{ form.final_mileage.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                    <small>
+                        Puede dejarse vacío mientras el viaje esté en curso.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Estado y observaciones -->
+
+            <div class="form-subsection">
+
+                <h3>
+                    Estado y observaciones
+                </h3>
+
+                <p>
+                    Indica la situación actual del viaje y agrega información adicional.
+                </p>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.status.id_for_label }}">
+                        Estado
+                    </label>
+
+                    {{ form.status }}
+
+                    {% if form.status.errors %}
+
+                        <div class="field-error">
+                            {{ form.status.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="{{ form.observations.id_for_label }}">
+                        Observaciones
+                    </label>
+
+                    {{ form.observations }}
+
+                    {% if form.observations.errors %}
+
+                        <div class="field-error">
+                            {{ form.observations.errors.0 }}
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a
+                    href="{% url 'trip_list' %}"
+                    class="btn btn-secondary"
+                >
+                    Cancelar
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+
+                    {% if trip %}
+                        Actualizar viaje
+                    {% else %}
+                        Guardar viaje
+                    {% endif %}
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
